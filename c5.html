@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Advanced Multi-Tool Calculator</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0; padding: 0;
+    background: #f4f6f8;
+    color: #222;
+  }
+  header {
+    background: #3f51b5;
+    color: white;
+    padding: 1rem;
+    text-align: center;
+  }
+  nav {
+    display: flex;
+    background: #283593;
+  }
+  nav button {
+    flex: 1;
+    padding: 1rem;
+    background: #283593;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+  }
+  nav button.active {
+    background: #5c6bc0;
+    font-weight: bold;
+  }
+  main {
+    max-width: 600px;
+    margin: 1rem auto;
+    padding: 1rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgb(0 0 0 / 0.1);
+  }
+  section {
+    display: none;
+  }
+  section.active {
+    display: block;
+  }
+  input[type="text"], input[type="number"], select {
+    width: 100%;
+    font-size: 1.2rem;
+    padding: 0.5rem;
+    margin: 0.5rem 0 1rem;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  button.calc-btn, button.interest-btn, button.currency-btn, button.unit-btn {
+    background: #3f51b5;
+    border: none;
+    color: white;
+    font-size: 1.1rem;
+    padding: 0.6rem 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 0.3rem;
+    width: 100%;
+  }
+  button.calc-btn:hover,
+  button.interest-btn:hover,
+  button.currency-btn:hover,
+  button.unit-btn:hover {
+    background: #283593;
+  }
+  #calc-keypad {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.3rem;
+    margin-bottom: 1rem;
+  }
+  #calc-keypad button {
+    font-size: 1.3rem;
+    padding: 0.7rem 0;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: #e8eaf6;
+  }
+  #calc-keypad button.operator {
+    background: #c5cae9;
+    font-weight: bold;
+  }
+  #calc-keypad button:hover {
+    background: #b0bec5;
+  }
+  #calc-result {
+    margin: 8px 0 15px;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #3f51b5;
+    min-height: 1.5em;
+    display: block;
+  }
+  small {
+    display: block;
+    margin-top: 0.5rem;
+    color: #555;
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Advanced Multi-Tool Calculator</h1>
+</header>
+<nav aria-label="Main menu">
+  <button id="tab-calc" class="active" aria-controls="calc" aria-selected="true" role="tab">Calculator</button>
+  <button id="tab-interest" aria-controls="interest" role="tab" aria-selected="false">Interest Calculator</button>
+  <button id="tab-currency" aria-controls="currency" role="tab" aria-selected="false">Currency Converter</button>
+  <button id="tab-unit" aria-controls="unit" role="tab" aria-selected="false">Unit Converter</button>
+</nav>
+<main>
+  <!-- Calculator -->
+  <section id="calc" class="active" tabindex="0" role="tabpanel" aria-labelledby="tab-calc">
+    <h2>Calculator</h2>
+    <input type="text" id="calc-input" placeholder="Type expression or use buttons" aria-label="Calculator expression" autocomplete="off" />
+    <output id="calc-result" aria-live="polite"></output>
+    
+    <div id="calc-keypad" aria-label="Calculator keypad">
+      <button>7</button>
+      <button>8</button>
+      <button>9</button>
+      <button class="operator">/</button>
+      <button>4</button>
+      <button>5</button>
+      <button>6</button>
+      <button class="operator">*</button>
+      <button>1</button>
+      <button>2</button>
+      <button>3</button>
+      <button class="operator">-</button>
+      <button>0</button>
+      <button>.</button>
+      <button class="operator">^</button>
+      <button class="operator">+</button>
+      <button class="operator">(</button>
+      <button class="operator">)</button>
+      <button class="operator">pi</button>
+      <button class="operator">C</button>
+    </div>
+    <button class="calc-btn" id="calc-btn">Calculate</button>
+    <small>Supports +, -, *, /, ^ (power), sin(), cos(), tan(), pi</small>
+  </section>
+
+  <!-- Interest Calculator -->
+  <section id="interest" tabindex="0" role="tabpanel" aria-labelledby="tab-interest">
+    <h2>Interest Calculator</h2>
+    <label for="principal">Principal Amount:</label>
+    <input type="number" id="principal" min="0" step="0.01" />
+    <label for="rate">Annual Interest Rate (%):</label>
+    <input type="number" id="rate" min="0" step="0.01" />
+    <label for="time">Time (years):</label>
+    <input type="number" id="time" min="0" step="0.01" />
+    <button class="interest-btn" id="interest-btn">Calculate Interest</button>
+    <p id="interest-result" style="font-weight: 700; margin-top:1rem;"></p>
+  </section>
+
+  <!-- Currency Converter -->
+  <section id="currency" tabindex="0" role="tabpanel" aria-labelledby="tab-currency">
+    <h2>Currency Converter</h2>
+    <label for="amount">Amount:</label>
+    <input type="number" id="amount" min="0" step="0.01" />
+    <label for="from-currency">From:</label>
+    <select id="from-currency" aria-label="From currency">
+      <!-- Common currencies -->
+      <option value="USD" selected>USD - US Dollar</option>
+      <option value="EUR">EUR - Euro</option>
+      <option value="JPY">JPY - Japanese Yen</option>
+      <option value="GBP">GBP - British Pound</option>
+      <option value="INR">INR - Indian Rupee</option>
+      <option value="AUD">AUD - Australian Dollar</option>
+      <option value="CAD">CAD - Canadian Dollar</option>
+      <option value="CHF">CHF - Swiss Franc</option>
+      <option value="CNY">CNY - Chinese Yuan</option>
+      <option value="SEK">SEK - Swedish Krona</option>
+      <!-- Add more as needed -->
+    </select>
+    <label for="to-currency">To:</label>
+    <select id="to-currency" aria-label="To currency">
+      <option value="USD">USD - US Dollar</option>
+      <option value="EUR" selected>EUR - Euro</option>
+      <option value="JPY">JPY - Japanese Yen</option>
+      <option value="GBP">GBP - British Pound</option>
+      <option value="INR">INR - Indian Rupee</option>
+      <option value="AUD">AUD - Australian Dollar</option>
+      <option value="CAD">CAD - Canadian Dollar</option>
+      <option value="CHF">CHF - Swiss Franc</option>
+      <option value="CNY">CNY - Chinese Yuan</option>
+      <option value="SEK">SEK - Swedish Krona</option>
+    </select>
+    <button class="currency-btn" id="currency-btn">Convert</button>
+    <p id="currency-result" style="font-weight: 700; margin-top:1rem;"></p>
+  </section>
+
+  <!-- Unit Converter -->
+  <section id="unit" tabindex="0" role="tabpanel" aria-labelledby="tab-unit">
+    <h2>Unit Converter</h2>
+    <label for="unit-type">Select Type:</label>
+    <select id="unit-type" aria-label="Unit type">
+      <option value="length">Length</option>
+      <option value="weight">Weight</option>
+      <option value="temperature">Temperature</option>
+      <option value="area">Area</option>
+      <option value="volume">Volume</option>
+      <option value="speed">Speed</option>
+    </select>
+    <label for="unit-from">From:</label>
+    <select id="unit-from" aria-label="Convert from unit"></select>
+    <label for="unit-to">To:</label>
+    <select id="unit-to" aria-label="Convert to unit"></select>
+    <label for="unit-value">Value:</label>
+    <input type="number" id="unit-value" />
+    <button class="unit-btn" id="unit-btn">Convert</button>
+    <p id="unit-result" style="font-weight: 700; margin-top:1rem;"></p>
+  </section>
+</main>
+
+<script>
+  // Tabs logic
+  const tabs = document.querySelectorAll('nav button');
+  const sections = document.querySelectorAll('main section');
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => {
+        t.classList.remove('active');
+        t.setAttribute('aria-selected', 'false');
+      });
+      tab.classList.add('active');
+      tab.setAttribute('aria-selected', 'true');
+      sections.forEach(sec => {
+        sec.classList.remove('active');
+      });
+      const id = tab.id.replace('tab-', '');
+      document.getElementById(id).classList.add('active');
+      document.getElementById(id).focus();
+    });
+  });
+
+  // Calculator logic
+  const calcInput = document.getElementById('calc-input');
+  const calcResult = document.getElementById('calc-result');
+  const calcKeypad = document.getElementById('calc-keypad');
+  const calcBtn = document.getElementById('calc-btn');
+
+  // Allowed chars and functions for safety
+  const allowedFunctions = ['sin', 'cos', 'tan', 'pi', 'Math', 'pow', 'sqrt'];
+  // To safely evaluate expressions with basic math functions
+  function safeEval(expr) {
+    try {
+      // Replace power operator '^' with Math.pow equivalent
+      expr = expr.replace(/(\d+|\([^()]+\))\s*\^\s*(\d+|\([^()]+\))/g, 'Math.pow($1,$2)');
+
+      // Replace pi with Math.PI
+      expr = expr.replace(/pi/g, 'Math.PI');
+
+      // Replace sin, cos, tan with Math equivalents, only if proper function call
+      expr = expr.replace(/sin\(/g, 'Math.sin(');
+      expr = expr.replace(/cos\(/g, 'Math.cos(');
+      expr = expr.replace(/tan\(/g, 'Math.tan(');
+
+      // Disallow anything else by removing invalid chars (only numbers, + - * / ^ . () and Math etc)
+      if (/[^-+*\/\d().\sMathpionsactwre]/i.test(expr)) {
+        return "Invalid characters detected.";
+      }
+
+      // eslint-disable-next-line no-new-func
+      const func = new Function('return ' + expr);
+      let result = func();
+      if (typeof result === 'number' && isFinite(result)) {
+        return result;
+      }
+      return 'Error in calculation';
+    } catch {
+      return 'Invalid Expression';
+    }
+  }
+
+  calcKeypad.addEventListener('click', e => {
+    if (e.target.tagName !== 'BUTTON') return;
+    const val = e.target.textContent;
+    if (val === 'C') {
+      calcInput.value = '';
+      calcResult.textContent = '';
+      return;
+    }
+    if (val === 'pi') {
+      calcInput.value += 'pi';
+      return;
+    }
+    calcInput.value += val;
+    calcInput.focus();
+  });
+
+  calcBtn.addEventListener('click', () => {
+    const expr = calcInput.value.trim();
+    if (!expr) {
+      calcResult.textContent = '';
+      return;
+    }
+    const res = safeEval(expr);
+    calcResult.textContent = res;
+  });
+
+  calcInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      calcBtn.click();
+    }
+  });
+
+  // Interest Calculator logic
+  const principalInput = document.getElementById('principal');
+  const rateInput = document.getElementById('rate');
+  const timeInput = document.getElementById('time');
+  const interestBtn = document.getElementById('interest-btn');
+  const interestResult = document.getElementById('interest-result');
+
+  interestBtn.addEventListener('click', () => {
+    const P = parseFloat(principalInput.value);
+    const R = parseFloat(rateInput.value);
+    const T = parseFloat(timeInput.value);
+    if (isNaN(P) || isNaN(R) || isNaN(T) || P < 0 || R < 0 || T < 0) {
+      interestResult.textContent = 'Please enter valid non-negative numbers.';
+      return;
+    }
+    const simpleInterest = (P * R * T) / 100;
+    const totalAmount = P + simpleInterest;
+    interestResult.textContent = `Simple Interest: ${simpleInterest.toFixed(2)} | Total Amount: ${totalAmount.toFixed(2)}`;
+  });
+
+  // Currency Converter logic (using exchangerate-api)
+  const amountInput = document.getElementById('amount');
+  const fromCurrency = document.getElementById('from-currency');
+  const toCurrency = document.getElementById('to-currency');
+  const currencyBtn = document.getElementById('currency-btn');
+  const currencyResult = document.getElementById('currency-result');
+
+  async function convertCurrency(amount, from, to) {
+    try {
+      // Using exchangerate.host free API
+      const res = await fetch(`https://api.exchangerate.host/convert?from=${from}&to=${to}&amount=${amount}`);
+      const data = await res.json();
+      if (data.result) return data.result;
+      return null;
+    } catch {
+      return null;
+    }
+  }
+
+  currencyBtn.addEventListener('click', async () => {
+    const amt = parseFloat(amountInput.value);
+    if (isNaN(amt) || amt < 0) {
+      currencyResult.textContent = 'Enter a valid positive amount.';
+      return;
+    }
+    const from = fromCurrency.value;
+    const to = toCurrency.value;
+    currencyResult.textContent = 'Converting...';
+    const converted = await convertCurrency(amt, from, to);
+    if (converted === null) {
+      currencyResult.textContent = 'Conversion failed. Try again later.';
+    } else {
+      currencyResult.textContent = `${amt} ${from} = ${converted.toFixed(4)} ${to}`;
+    }
+  });
+
+  // Unit Converter Data & Logic
+  const unitTypeSelect = document.getElementById('unit-type');
+  const unitFromSelect = document.getElementById('unit-from');
+  const unitToSelect = document.getElementById('unit-to');
+  const unitValueInput = document.getElementById('unit-value');
+  const unitResultOutput = document.getElementById('unit-result');
+
+  const unitsData = {
+    length: {
+      base: 'meter',
+      units: {
+        meter: 1,
+        kilometer: 1000,
+        centimeter: 0.01,
+        millimeter: 0.001,
+        mile: 1609.344,
+        yard: 0.9144,
+        foot: 0.3048,
+        inch: 0.0254,
+      }
+    },
+    weight: {
+      base: 'kilogram',
+      units: {
+        kilogram: 1,
+        gram: 0.001,
+        milligram: 0.000001,
+        pound: 0.453592,
+        ounce: 0.0283495,
+      }
+    },
+    temperature: {
+      units: {
+        Celsius: 'Celsius',
+        Fahrenheit: 'Fahrenheit',
+        Kelvin: 'Kelvin',
+      }
+    },
+    area: {
+      base: 'square meter',
+      units: {
+        'square meter': 1,
+        'square kilometer': 1e6,
+        'square mile': 2.59e6,
+        acre: 4046.86,
+        hectare: 10000,
+        'square yard': 0.836127,
+        'square foot': 0.092903,
+        'square inch': 0.00064516,
+      }
+    },
+    volume: {
+      base: 'liter',
+      units: {
+        liter: 1,
+        milliliter: 0.001,
+        cubic_meter: 1000,
+        gallon: 3.78541,
+        quart: 0.946353,
+        pint: 0.473176,
+        cup: 0.24,
+        fluid_ounce: 0.0295735,
+        tablespoon: 0.0147868,
+        teaspoon: 0.00492892,
+      }
+    },
+    speed: {
+      base: 'meter_per_second',
+      units: {
+        'meter/second': 1,
+        'kilometer/hour': 0.277778,
+        'mile/hour': 0.44704,
+        'foot/second': 0.3048,
+        'knot': 0.514444,
+      }
+    }
+  };
+
+  function fillUnitOptions(type) {
+    unitFromSelect.innerHTML = '';
+    unitToSelect.innerHTML = '';
+    const units = unitsData[type].units;
+    for (const u in units) {
+      const optionFrom = document.createElement('option');
+      optionFrom.value = u;
+      optionFrom.textContent = u.replace(/_/g, ' ');
+      unitFromSelect.appendChild(optionFrom);
+      const optionTo = optionFrom.cloneNode(true);
+      unitToSelect.appendChild(optionTo);
+    }
+  }
+
+  function convertUnits(type, from, to, value) {
+    if (type === 'temperature') {
+      // Temperature conversions manually
+      if (from === to) return value;
+      if (from === 'Celsius') {
+        if (to === 'Fahrenheit') return (value * 9/5) + 32;
+        if (to === 'Kelvin') return value + 273.15;
+      } else if (from === 'Fahrenheit') {
+        if (to === 'Celsius') return (value - 32) * 5/9;
+        if (to === 'Kelvin') return (value - 32) * 5/9 + 273.15;
+      } else if (from === 'Kelvin') {
+        if (to === 'Celsius') return value - 273.15;
+        if (to === 'Fahrenheit') return (value - 273.15) * 9/5 + 32;
+      }
+      return NaN;
+    } else {
+      const baseValue = value * unitsData[type].units[from];
+      return baseValue / unitsData[type].units[to];
+    }
+  }
+
+  unitTypeSelect.addEventListener('change', () => {
+    fillUnitOptions(unitTypeSelect.value);
+    unitResultOutput.textContent = '';
+  });
+
+  unitBtn.addEventListener('click', () => {
+    const type = unitTypeSelect.value;
+    const from = unitFromSelect.value;
+    const to = unitToSelect.value;
+    const val = parseFloat(unitValueInput.value);
+    if (isNaN(val)) {
+      unitResultOutput.textContent = 'Enter a valid number.';
+      return;
+    }
+    const converted = convertUnits(type, from, to, val);
+    if (isNaN(converted)) {
+      unitResultOutput.textContent = 'Conversion error.';
+    } else {
+      unitResultOutput.textContent = `${val} ${from.replace(/_/g, ' ')} = ${converted.toFixed(4)} ${to.replace(/_/g, ' ')}`;
+    }
+  });
+
+  // Initialize unit selects on load
+  fillUnitOptions(unitTypeSelect.value);
+</script>
+</body>
+</html>
